@@ -13,6 +13,5 @@ package finalproject;
 public class ads {
     private int x =20;
     
-    //chetori Fariii?
-    
+    //farnaz
 }
