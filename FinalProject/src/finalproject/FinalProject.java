@@ -14,8 +14,9 @@ public class FinalProject {
     /**
      * @param args the command line arguments
      */
+    private long s = 2l;
     public static void main(String[] args) {
-        // TODO code application logic here
+        
     }
     
 }
