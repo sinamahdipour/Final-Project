@@ -58,3 +58,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /FinalProject/nbproject/private/
+/FinalProject/build/

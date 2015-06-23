@@ -9,13 +9,7 @@ package finalproject;
  *
  * @author Sina Mp
  */
-public class FinalProject {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-       StartMenu sm = new StartMenu();
-    }
+public class Map {
+    
     
 }
