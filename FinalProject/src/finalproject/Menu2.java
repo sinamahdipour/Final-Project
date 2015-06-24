@@ -34,30 +34,30 @@ public class Menu2 extends JFrame{
     JButton singleplayerBtn;
     JButton multiplayerBtn;
     ActionListener al;
-    JPanel jp = new JPanel();
+//    JPanel jp = new JPanel();
     
     public Menu2(){
     
-        jp.setBackground(Color.red); jp.setSize(800, 600);
+//        jp.setBackground(Color.red); jp.setSize(800, 600);
         screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1000, 700);
         setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
         try {
-            backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\smbg2.jpg").toURI()));
+            backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\smbg3.jpg").toURI()));
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(StartMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-         singleplayerBtn = new JButton("singleplayer");
-        multiplayerBtn = new JButton("multiplayer");
+         singleplayerBtn = new JButton("Single Player");
+        multiplayerBtn = new JButton("Multi Player");
         
 
-        singleplayerBtn.setSize(100, 40);
+        singleplayerBtn.setSize(130, 40);
         singleplayerBtn.setLocation(getWidth() * 1 / 15, getHeight() * 26 / 50);
 //        startBtn.addActionListener(al);
         getContentPane().add(singleplayerBtn);
 
-        multiplayerBtn.setSize(100, 40);
+        multiplayerBtn.setSize(130, 40);
         multiplayerBtn.setLocation(getWidth() * 1 / 15 , getHeight() * 26 / 50 + 45);
 //        settingsBtn.addActionListener(al);
         getContentPane().add(multiplayerBtn);
