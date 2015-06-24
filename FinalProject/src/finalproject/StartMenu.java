@@ -88,6 +88,7 @@ public class StartMenu extends JPanel {
         setLayout(null);
 //        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
+//        setResizable(false);
     }
     
 
