@@ -88,6 +88,7 @@ public class StartMenu extends JFrame {
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
+        setResizable(false);
     }
     
 
