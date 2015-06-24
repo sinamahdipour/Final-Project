@@ -38,7 +38,7 @@ public class Menu2 extends JFrame{
     
     public Menu2(){
     
-        jp.setBackground(Color.red); jp.setSize(1000, 800);
+        jp.setBackground(Color.red); jp.setSize(800, 600);
         screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1000, 700);
         setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
