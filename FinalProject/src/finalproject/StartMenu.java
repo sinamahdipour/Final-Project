@@ -27,7 +27,7 @@ import javax.swing.JPanel;
  *
  * @author Sina Mp
  */
-public class StartMenu extends JFrame {
+public class StartMenu extends JPanel {
 
     Dimension screenDimention;
     BufferedImage backGround;
@@ -35,10 +35,8 @@ public class StartMenu extends JFrame {
     JButton settingsBtn;
     JButton quitBtn;
     ActionListener al;
-    JPanel jp = new JPanel();
-    
+        
     public StartMenu() {
-        jp.setBackground(Color.red); jp.setSize(800, 600);
         screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1000, 700);
         setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
@@ -53,14 +51,13 @@ public class StartMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == startBtn){
-//                    Map n = new Map();
-                    add(jp);
+                    Map n = new Map();
                 }
                 if(e.getSource() == settingsBtn){
-                
+                    
                 }
                 if(e.getSource() == quitBtn){
-                
+                    System.exit(0);
                 }
             }
         };
@@ -72,21 +69,24 @@ public class StartMenu extends JFrame {
 
         startBtn.setSize(100, 40);
         startBtn.setLocation(getWidth() * 1 / 15, getHeight() * 26 / 50);
-//        startBtn.addActionListener(al);
-        getContentPane().add(startBtn);
+        startBtn.addActionListener(al);
+//        getContentPane().
+        add(startBtn);
 
         settingsBtn.setSize(100, 40);
         settingsBtn.setLocation(getWidth() * 1 / 15 , getHeight() * 26 / 50 + 45);
 //        settingsBtn.addActionListener(al);
-        getContentPane().add(settingsBtn);
+//        getContentPane().
+                add(settingsBtn);
 
         quitBtn.setSize(100, 40);
         quitBtn.setLocation(getWidth() * 1 / 15, getHeight() * 26 / 50 + 90);
 //        quitBtn.addActionListener(al);
-        getContentPane().add(quitBtn);
+//        getContentPane().
+                add(quitBtn);
 
         setLayout(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+//        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
     }
     
@@ -108,4 +108,16 @@ public class StartMenu extends JFrame {
         settingsBtn.repaint();
         quitBtn.repaint();
     }
+    
+    
+
+
+    private class SettingsMenu extends JPanel{
+        @Override
+        public void paint(Graphics g){
+            
+        }
+    }
+        
+    
 }

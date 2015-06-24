@@ -16,6 +16,7 @@ public class FinalProject {
      */
     public static void main(String[] args) {
        StartMenu sm = new StartMenu();
+       
     }
     
 }
