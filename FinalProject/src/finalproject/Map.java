@@ -33,7 +33,7 @@ public class Map extends JFrame {
         try {
             backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\b.jpg").toURI()));
         } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(StartMenu.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GameFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         setLayout(null);
