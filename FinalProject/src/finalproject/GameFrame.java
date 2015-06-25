@@ -8,17 +8,21 @@ package finalproject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -101,29 +105,21 @@ public class GameFrame extends JFrame {
             startBtn.setSize(100, 40);
             startBtn.setLocation(1000 * 1 / 15, 700 * 26 / 50);
             startBtn.addActionListener(al);
-//        getContentPane().
             add(startBtn);
 
             settingsBtn.setSize(100, 40);
             settingsBtn.setLocation(1000 * 1 / 15, 700 * 26 / 50 + 45);
             settingsBtn.addActionListener(al);
-//        getContentPane().
             add(settingsBtn);
 
             quitBtn.setSize(100, 40);
             quitBtn.setLocation(1000 * 1 / 15, 700 * 26 / 50 + 90);
-//        quitBtn.addActionListener(al);
-//        getContentPane().
+            quitBtn.addActionListener(al);
             add(quitBtn);
         }
 
         @Override
         public void paint(Graphics g) {
-//             try {
-//             backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("/data/smbg.jpg").toURI()));
-//             } catch (URISyntaxException | IOException ex) {
-//             Logger.getLogger(StartMenu.class.getName()).log(Level.SEVERE, null, ex);
-//             }
             super.paint(g);
             g.drawImage(backGround, 0, 0, null);
             repaintComponents();
@@ -160,7 +156,10 @@ public class GameFrame extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (e.getSource() == singleplayerBtn) {
-                        Map m = new Map();
+                        Game g = new Game();
+                        getContentPane().removeAll();
+                        getContentPane().add(g);
+                        getContentPane().repaint();
                     }
                     if (e.getSource() == multiplayerBtn) {
 
@@ -174,18 +173,12 @@ public class GameFrame extends JFrame {
             singleplayerBtn.setSize(130, 40);
             singleplayerBtn.setLocation(1000 * 1 / 15, 700 * 26 / 50);
             singleplayerBtn.addActionListener(al2);
-//        getContentPane().
             add(singleplayerBtn);
 
             multiplayerBtn.setSize(130, 40);
             multiplayerBtn.setLocation(1000 * 1 / 15, 700 * 26 / 50 + 45);
             settingsBtn.addActionListener(al2);
-//        getContentPane().
             add(multiplayerBtn);
-
-//        setDefaultCloseOperation(EXIT_ON_CLOSE);
-//        setVisible(true);
-//        setResizable(false);
         }
 
         @Override
@@ -198,6 +191,77 @@ public class GameFrame extends JFrame {
         private void repaintComponents() {
             singleplayerBtn.repaint();
             multiplayerBtn.repaint();
+        }
+    }
+
+    private class Game extends JPanel implements Runnable {
+
+        BufferedImage backGround;
+        BufferedImage bufferedScene;
+        private Graphics2D bufferedGraphics;
+        private int mapMatrix[][];
+
+        public Game() {
+            screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
+            setSize(1000, 700);
+//            setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
+            mapMatrix = new int[13][19];
+            try {
+                backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\back.jpg").toURI()));
+            } catch (URISyntaxException | IOException ex) {
+                System.out.println("Problems in loading pictures of the game.");
+            }
+
+            bufferedScene = new BufferedImage(1000, 700, BufferedImage.TYPE_INT_RGB);
+            bufferedGraphics = (Graphics2D) bufferedScene.createGraphics();
+
+            loadMap();
+            setLayout(null);
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            render(bufferedGraphics);
+            g.drawImage(bufferedScene, 0, 0, null);
+        }
+
+        private void render(Graphics2D g2) {
+            g2.drawImage(backGround, 0, 0, null);
+            for (int i = 0; i < 13; i++) {
+                for (int j = 0; j < 19; j++) {
+                    if (mapMatrix[i][j] != 0) {
+                        g2.fillRect(j * 52, i * 52, 52, 52);
+                        g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\tile0" + mapMatrix[i][j] + ".png")).getImage(), j * 52, i * 52, null);
+                    }
+                }
+            }
+        }
+
+        private void loadMap() {
+            Scanner fromFileReader = null;
+            try {
+                fromFileReader = new Scanner(new File("src/data/maps/map01.txt"));
+            } catch (FileNotFoundException ex) {
+                System.out.println("Problems in reading the map file.");
+            }
+            for (int i = 0; i < 13; i++) {
+                for (int j = 0; j < 19; j++) {
+                    mapMatrix[i][j] = fromFileReader.nextInt();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                repaint();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 
