@@ -22,6 +22,8 @@ public class Robot {
     private int y;
     public BufferedImage bodyImage;
     public BufferedImage [] legMovingImages;
+    public BufferedImage[] fall;
+    private Bullet bullet;
 
     public Robot(){
         legMovingImages =  new BufferedImage[18];
@@ -49,5 +51,10 @@ public class Robot {
     }
     public void setY(int y){
         this.y = y;
+    }
+    
+    public Bullet newBullet() throws IOException, URISyntaxException {
+        bullet = new Bullet();
+        return bullet;
     }
 }

@@ -11,14 +11,18 @@ package finalproject;
  */
 public class Box {
 
-    private int x;
-    private int y;
+    public int x;
+    public int y;
     private int insideObject;
     private boolean isDamaged;
+    boolean isDamagable;
     int mapMatrix[][];
-
+    int health;
+    int boxType;
     public Box(int x, int y, int inObject) {
         isDamaged = false;
+        isDamagable = true;
+        health = 5;
         this.x = x;
         this.y = y;
         mapMatrix =  new int[13][19];
