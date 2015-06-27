@@ -170,6 +170,7 @@ public class GameFrame extends JFrame {
                         getContentPane().removeAll();
                         getContentPane().add(g);
                         getContentPane().repaint();
+                        g.requestFocus();
                     }
                     if (e.getSource() == multiplayerBtn) {
 
@@ -220,12 +221,12 @@ public class GameFrame extends JFrame {
         private AffineTransform identityB;
         private int time;
         private boolean shot;
-//        MouseMotionListener mml;
-//        MouseInputListener mil;
         private Thread player;
 
         public Game() {
             setFocusable(true);
+            
+            setLayout(null);
 //            requestFocus();
             screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
             setSize(1000, 700);
@@ -235,7 +236,7 @@ public class GameFrame extends JFrame {
             } catch (URISyntaxException | IOException ex) {
                 System.out.println("Problems in loading pictures of the game.");
             }
-
+            
             bufferedScene = new BufferedImage(1000, 700, BufferedImage.TYPE_INT_RGB);
             bufferedGraphics = (Graphics2D) bufferedScene.createGraphics();
 
@@ -245,8 +246,6 @@ public class GameFrame extends JFrame {
             this.addMouseMotionListener(this);
             this.addMouseListener(this);
             loadMap();
-            setLayout(null);
-            
         }
 
         @Override
@@ -286,13 +285,13 @@ public class GameFrame extends JFrame {
             identityL = new AffineTransform();
             identityB = new AffineTransform();
 
-            if ((myRobot.getX() > -20) && (myRobot.getY() > 0) && (myRobot.getX() < 940) && (myRobot.getY() < 630)) { //shart bayad vase hame jahata tafkik she
+            if ((myRobot.getX() > -20) && (myRobot.getY() > 0) && (myRobot.getX() < 1000) && (myRobot.getY() < 700)) { //shart bayad vase hame jahata tafkik she
                 if (left && up) {
                     robotX = (int) ((myRobot.getX() - 13 + 28) / 52);
                     robotY = (int) ((myRobot.getY() - 13 + 24) / 52);
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
-                        myRobot.setX(myRobot.getX() - 10);
-                        myRobot.setY(myRobot.getY() - 10);
+                        myRobot.setX(myRobot.getX() - 13);
+                        myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             mapMatrix[robotY][robotX] = 10;
                         }
@@ -474,13 +473,19 @@ public class GameFrame extends JFrame {
             }
         }
 
-
+        @Override
+        public void run() {
+            while (true) {
+                repaint();
+                getWindowFocusListeners();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
 // mouse and key listener
-//        @Override
-//        protected void processKeyEvent(KeyEvent e) {
-            
-            
-//        }
         
         @Override
         public void mouseDragged(MouseEvent e) {
@@ -531,9 +536,11 @@ public class GameFrame extends JFrame {
         
         @Override
         protected void processKeyEvent(KeyEvent e){
+//            super.processKeyEvent(e);
+            System.out.print("I'm here");
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 System.out.println("khare man");
-                if (e.getKeyCode() == KeyEvent.VK_LEFT/* || e.getKeyCode() == KeyEvent.VK_A*/) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                     left = true;
                     System.out.println("checkpointl");
                     time--;
@@ -573,18 +580,7 @@ public class GameFrame extends JFrame {
             }
             
         }
-                @Override
-        public void run() {
-            while (true) {
-                repaint();
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        
+
     }
 
 }
