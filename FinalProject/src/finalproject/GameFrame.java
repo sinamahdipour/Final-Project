@@ -5,6 +5,7 @@
  */
 package finalproject;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addActionListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,6 +14,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
@@ -202,7 +204,7 @@ public class GameFrame extends JFrame {
         }
     }
 
-    private class Game extends JPanel implements Runnable, MouseInputListener, MouseMotionListener {
+    private class Game extends JPanel implements ActionListener, Runnable, MouseInputListener, MouseMotionListener {
 
         BufferedImage backGround;
         BufferedImage bufferedScene;
@@ -224,10 +226,9 @@ public class GameFrame extends JFrame {
 
         public Game() {
             setFocusable(true);
-            requestFocus();
+//            requestFocus();
             screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
             setSize(1000, 700);
-//            setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
             mapMatrix = new int[13][19];
             try {
                 backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\bg01.jpg").toURI()));
@@ -239,8 +240,8 @@ public class GameFrame extends JFrame {
             bufferedGraphics = (Graphics2D) bufferedScene.createGraphics();
 
             myRobot = new Robot();
-            myRobot.setX(500);
-            myRobot.setY(600);
+            myRobot.setX(515);
+            myRobot.setY(565);
             this.addMouseMotionListener(this);
             this.addMouseListener(this);
             loadMap();
@@ -261,10 +262,6 @@ public class GameFrame extends JFrame {
             g2.drawImage(backGround, 0, 0, null);
             for (int i = 0; i < 13; i++) {
                 for (int j = 0; j < 19; j++) {
-//                    if (mapMatrix[i][j] != 0) {
-//                        g2.fillRect(j * 52, i * 52, 52, 52);
-//                        g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\tile0" + mapMatrix[i][j] + ".png")).getImage(), j * 52, i * 52, null);
-//                    }
                     if (mapMatrix[i][j] != 0) {
                         if (mapMatrix[i][j] < 6) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
@@ -446,7 +443,7 @@ public class GameFrame extends JFrame {
         private void loadMap() {
             Scanner fromFileReader = null;
             try {
-                fromFileReader = new Scanner(new File("src/data/maps/map1.txt"));
+                fromFileReader = new Scanner(new File("src/data/maps/map01.txt"));
             } catch (FileNotFoundException ex) {
                 System.out.println("Problems in reading the map file.");
             }
@@ -477,61 +474,13 @@ public class GameFrame extends JFrame {
             }
         }
 
-        @Override
-        public void run() {
-            while (true) {
-                repaint();
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+
 // mouse and key listener
-        @Override
-        protected void processKeyEvent(KeyEvent e) {
+//        @Override
+//        protected void processKeyEvent(KeyEvent e) {
             
-            if (e.getID() == KeyEvent.KEY_PRESSED) {
-                if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-                    left = true;
-                    System.out.println("checkpointl");
-                    time--;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-                    System.out.println("checkpointr");
-                    right = true;
-                    time++;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-                    System.out.println("checkpointw");
-                    down = true;
-                    time--;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-                    up = true;
-                    time++;
-                }
-            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
-                if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-                    System.out.println("checkpointx");
-                    left = false;
-                    time = 0;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-                    right = false;
-                    time = 0;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-                    down = false;
-                    time = 0;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-                    up = false;
-                    time = 0;
-                }
-            }
-        }
+            
+//        }
         
         @Override
         public void mouseDragged(MouseEvent e) {
@@ -572,6 +521,68 @@ public class GameFrame extends JFrame {
         @Override
         public void mouseExited(MouseEvent e) {
             
+        }
+
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+        }
+        
+        @Override
+        protected void processKeyEvent(KeyEvent e){
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                System.out.println("khare man");
+                if (e.getKeyCode() == KeyEvent.VK_LEFT/* || e.getKeyCode() == KeyEvent.VK_A*/) {
+                    left = true;
+                    System.out.println("checkpointl");
+                    time--;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+                    System.out.println("checkpointr");
+                    right = true;
+                    time++;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+                    System.out.println("checkpointw");
+                    down = true;
+                    time--;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+                    up = true;
+                    time++;
+                }
+            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+                    System.out.println("checkpointx");
+                    left = false;
+                    time = 0;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+                    right = false;
+                    time = 0;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+                    down = false;
+                    time = 0;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+                    up = false;
+                    time = 0;
+                }
+            }
+            
+        }
+                @Override
+        public void run() {
+            while (true) {
+                repaint();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         
     }
