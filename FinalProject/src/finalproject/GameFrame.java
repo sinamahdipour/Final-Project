@@ -223,6 +223,8 @@ public class GameFrame extends JFrame {
         private Thread player;
 
         public Game() {
+            setFocusable(true);
+            requestFocus();
             screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
             setSize(1000, 700);
 //            setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
@@ -240,7 +242,7 @@ public class GameFrame extends JFrame {
             myRobot.setX(500);
             myRobot.setY(600);
             this.addMouseMotionListener(this);
-            this.addMouseMotionListener(this);
+            this.addMouseListener(this);
             loadMap();
             setLayout(null);
             
@@ -493,14 +495,16 @@ public class GameFrame extends JFrame {
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                     left = true;
-                    System.out.println("checkpoint");
+                    System.out.println("checkpointl");
                     time--;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+                    System.out.println("checkpointr");
                     right = true;
                     time++;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+                    System.out.println("checkpointw");
                     down = true;
                     time--;
                 }
@@ -510,6 +514,7 @@ public class GameFrame extends JFrame {
                 }
             } else if (e.getID() == KeyEvent.KEY_RELEASED) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+                    System.out.println("checkpointx");
                     left = false;
                     time = 0;
                 }
@@ -530,7 +535,7 @@ public class GameFrame extends JFrame {
         
         @Override
         public void mouseDragged(MouseEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         }
 
         @Override
@@ -546,7 +551,7 @@ public class GameFrame extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         }
 
         @Override
@@ -561,12 +566,12 @@ public class GameFrame extends JFrame {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         }
         
     }
