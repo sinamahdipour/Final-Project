@@ -57,17 +57,23 @@ public class Bullet {
         return enemyNumber;
     }
     
-    public boolean isCrashed(Box[] box, int map[][], int numberOfBox,ArrayList<Enemy> enemy) throws URISyntaxException, IOException {
+    public boolean isCrashed(Box[] box, int map[][], int numberOfBox, ArrayList<Enemy> enemy) throws URISyntaxException, IOException {
         boxNumber = -1;
         enemyNumber = -1;
         boolean isCrashed = false;
-        this.numberOfBox = numberOfBox;
+//        this.numberOfBox = numberOfBox;
+//        System.out.println("numberof box    "+this.numberOfBox);
         for (int i = 0; i < numberOfBox; i++) {
+            box = new Box[numberOfBox];
+            System.out.println("health =  "+box[i].x);
+            
             if (box[i].health != 0) {
-                if ((box[i].y == x / 52) && (box[i].x == y / 52)) {
+                System.out.println("gooooooooooog bfroe ");
+                if ((box[i].y == (int) x / 52) && (box[i].x == (int) y / 52)) {
                     if (box[i].isDamagable) {
                         box[i].health--;
                         boxNumber = i;
+                        System.out.println("gooooooooooog  " + boxNumber);
                     }
                     isCrashed = true;
                     if (box[i].health == 0) {
