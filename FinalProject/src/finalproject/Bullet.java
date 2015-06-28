@@ -83,7 +83,7 @@ public class Bullet {
                     enemy.get(i).health -= 10;
                     if (enemy.get(i).health == 0) {
                         enemy.get(i).isAlive = false;
-                        enemy.get(i).crashed = true;
+                        enemy.get(i).isCrashed = true;
                     }
                     isCrashed = true;
                 }
