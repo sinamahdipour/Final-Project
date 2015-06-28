@@ -80,7 +80,7 @@ public class Bullet {
             for (int i = 0; i < enemy.size(); i++) {
                 if (((int) enemy.get(i).getX() / 52 == (int) x / 52 - 1) && ((int) enemy.get(i).getY() / 52 == (int) y / 52 - 1)) {
                     enemyNumber = i;
-                    enemy.get(i).health -= 10;
+                    enemy.get(i).health = enemy.get(i).health - 10;
                     if (enemy.get(i).health == 0) {
                         enemy.get(i).isAlive = false;
                         enemy.get(i).isCrashed = true;
