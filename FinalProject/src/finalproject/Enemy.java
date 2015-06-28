@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 
 /**
  *
- * @author Reza
+ * @author Sina Mp
  */
 public class Enemy extends Robot {
 

@@ -18,42 +18,56 @@ import javax.imageio.ImageIO;
  * @author Sina Mp
  */
 public class Robot {
-    private int x;
-    private int y;
+
+    private double x;
+    private double y;
     public BufferedImage bodyImage;
-    public BufferedImage [] legMovingImages;
+    public BufferedImage[] legMovingImages;
     public BufferedImage[] fall;
+    public BufferedImage bodyHitted;
     private Bullet bullet;
     protected boolean isAlive;
     protected int health;
-    public Robot(){
-        legMovingImages =  new BufferedImage[18];
+    private Gun gun;
+
+    public Robot() {
+        gun = new Gun();
+        health = 100;
+        legMovingImages = new BufferedImage[18];
+        fall = new BufferedImage[7];
         try {
             bodyImage = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\body.png").toURI()));
-            for(int i=0; i<18; i++){
-                legMovingImages[i] = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\move\\"+ i +".png").toURI()));
+            for (int i = 0; i < 18; i++) {
+                legMovingImages[i] = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\move\\" + i + ".png").toURI()));
             }
+            for (int i = 0; i < 7; i++) {
+                fall[i] = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\fall\\0" + (i + 1) + ".png").toURI()));
+            }
+            bodyHitted = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\bodyHitted.png").toURI()));
         } catch (IOException ex) {
             System.out.println("Problems in loading the image of the robot.");
         } catch (URISyntaxException ex) {
             System.out.println("Problems in loading the image of the robot.");
         }
-        
+
     }
-    
-    public int getX(){
+
+    public double getX() {
         return x;
     }
-    public int getY(){
+
+    public double getY() {
         return y;
     }
-    public void setX(int x){
+
+    public void setX(double x) {
         this.x = x;
     }
-    public void setY(int y){
+
+    public void setY(double y) {
         this.y = y;
     }
-    
+
     public Bullet newBullet() throws IOException, URISyntaxException {
         bullet = new Bullet();
         return bullet;
