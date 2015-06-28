@@ -24,7 +24,8 @@ public class Robot {
     public BufferedImage [] legMovingImages;
     public BufferedImage[] fall;
     private Bullet bullet;
-
+    protected boolean isAlive;
+    protected int health;
     public Robot(){
         legMovingImages =  new BufferedImage[18];
         try {

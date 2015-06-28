@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /**
@@ -22,6 +23,7 @@ public class Bullet {
     public BufferedImage[] bullets;
     public int boxNumber;
     private int numberOfBox;
+    private int enemyNumber;
 
     public Bullet() throws IOException, URISyntaxException {
         bullets = new BufferedImage[5];
@@ -51,9 +53,13 @@ public class Bullet {
     public int boxCrashedNumber() {
         return boxNumber;
     }
+    public int enemyCrashedNumber() {
+        return enemyNumber;
+    }
     
-    public boolean isCrashed(Box[] box, int map[][], int numberOfBox) throws URISyntaxException, IOException {
-        boxNumber = 0;
+    public boolean isCrashed(Box[] box, int map[][], int numberOfBox,ArrayList<Enemy> enemy) throws URISyntaxException, IOException {
+        boxNumber = -1;
+        enemyNumber = -1;
         boolean isCrashed = false;
         this.numberOfBox = numberOfBox;
         for (int i = 0; i < numberOfBox; i++) {
@@ -67,6 +73,19 @@ public class Bullet {
                     if (box[i].health == 0) {
                         box[i].damage(map);
                     }
+                }
+            }
+        }
+        if (!isCrashed) {
+            for (int i = 0; i < enemy.size(); i++) {
+                if (((int) enemy.get(i).getX() / 52 == (int) x / 52 - 1) && ((int) enemy.get(i).getY() / 52 == (int) y / 52 - 1)) {
+                    enemyNumber = i;
+                    enemy.get(i).health -= 10;
+                    if (enemy.get(i).health == 0) {
+                        enemy.get(i).isAlive = false;
+                        enemy.get(i).crashed = true;
+                    }
+                    isCrashed = true;
                 }
             }
         }
