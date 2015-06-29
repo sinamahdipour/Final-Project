@@ -269,7 +269,7 @@ public class GameFrame extends JFrame {
             }
             enemy.get(0).type = Enemy.NOFIRE;
             enemy.get(0).setX(350);
-            enemy.get(0).setY(100 /*+ 0.25*/);
+            enemy.get(0).setY(100 + 0.25);
 
             bulletArray = new ArrayList<>();
             bulletAngleArray = new ArrayList<>();
@@ -284,6 +284,7 @@ public class GameFrame extends JFrame {
             this.addMouseMotionListener(this);
             this.addMouseListener(this);
             loadMap();
+            createBox();
         }
 
         @Override
@@ -512,9 +513,9 @@ public class GameFrame extends JFrame {
                 }
 
 //            System.out.println("22222222222222222");
-                System.out.println("h   "+numberOfBoxes);
+                System.out.println("h   " + numberOfBoxes);
                 boolean f = bulletArray.get(i).isCrashed(box, mapMatrix, numberOfBoxes, enemy);
-                if(f) {
+                if (f) {
 //                    System.out.println("siiiiiiiiiiiiiiiinaaaaaaaaaaaaaaaaaa");
                     if ((bulletArray.get(i).boxCrashedNumber() >= 0) && (box[bulletArray.get(i).boxCrashedNumber()].boxType > 0)) {
                         g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\box0" + box[bulletArray.get(i).boxCrashedNumber()].boxType + "hitted.png")).getImage(), box[bulletArray.get(i).boxCrashedNumber()].y * 52, box[bulletArray.get(i).boxCrashedNumber()].x * 52, this);
@@ -629,28 +630,55 @@ public class GameFrame extends JFrame {
                 }
             }
 // making boxes            
+            /*numberOfBoxes = 0;
+             for (int i = 0; i < 13; i++) {
+             for (int j = 0; j < 19; j++) {
+             if ((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) {
+             numberOfBoxes++;
+             System.out.println(" ggggggggggg   "+numberOfBoxes);
+             }
+             }
+             }
+             Box[] box = new Box[numberOfBoxes];
+            
+             int boxCounter = 0;
+             for (int i = 0; i < 13; i++) {
+             for (int j = 0; j < 19; j++) {
+             if ((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10) || (mapMatrix[i][j] == 20)) {
+             box[boxCounter] = new Box(i, j, (int) (Math.random() * 3));
+             System.out.println("abcd  "+box[boxCounter].health);
+             box[boxCounter].boxType = 10 - mapMatrix[i][j];
+             System.out.println("ppppppppppp");
+             if (mapMatrix[i][j] == 20) {
+             box[boxCounter].isDamagable = false;
+             }
+             boxCounter++;
+             }
+             }
+             }*/
+        }
+
+        private void createBox() {
             numberOfBoxes = 0;
-            for (int i = 0; i < 13; i++) {
-                for (int j = 0; j < 19; j++) {
-                    if ((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) {
+            for (int i = 0; i < 11; i++) {
+                for (int j = 0; j < 15; j++) {
+                    if (((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) || (mapMatrix[i][j] == 20)) {
                         numberOfBoxes++;
-                        System.out.println(" ggggggggggg   "+numberOfBoxes);
                     }
                 }
             }
-            Box[] box = new Box[numberOfBoxes];
-            
-            int boxCounter = 0;
-            for (int i = 0; i < 13; i++) {
-                for (int j = 0; j < 19; j++) {
-                    if ((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10) || (mapMatrix[i][j] == 20)) {
-                        box[boxCounter] = new Box(i, j, (int) (Math.random() * 3));
-                        box[boxCounter].boxType = 10 - mapMatrix[i][j];
-                        System.out.println("ppppppppppp");
+            box = new Box[numberOfBoxes];
+            int boxNumber = 0;
+            for (int i = 0; i < 11; i++) {
+                for (int j = 0; j < 15; j++) {
+                    if (((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) || (mapMatrix[i][j] == 20)) {
+                        box[boxNumber] = new Box(i, j, (int) (Math.random() * 3));
+                        box[boxNumber].boxType = 10 - mapMatrix[i][j];
                         if (mapMatrix[i][j] == 20) {
-                            box[boxCounter].isDamagable = false;
+                            box[boxNumber].isDamagable = false;
                         }
-                        boxCounter++;
+                        System.out.println(i + " " + j);
+                        boxNumber++;
                     }
                 }
             }

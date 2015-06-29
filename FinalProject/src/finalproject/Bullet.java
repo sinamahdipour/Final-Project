@@ -64,8 +64,10 @@ public class Bullet {
 //        this.numberOfBox = numberOfBox;
 //        System.out.println("numberof box    "+this.numberOfBox);
         for (int i = 0; i < numberOfBox; i++) {
-            box = new Box[numberOfBox];
-            System.out.println("health =  "+box[i].x);
+//            box = new Box[numberOfBox];
+             
+//            System.out.println("khar");
+//            System.out.println("health =  "+box[0].x);
             
             if (box[i].health != 0) {
                 System.out.println("gooooooooooog bfroe ");
