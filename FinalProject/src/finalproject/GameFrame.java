@@ -8,6 +8,7 @@ package finalproject;
 import static com.sun.java.accessibility.util.AWTEventMonitor.addActionListener;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -28,6 +29,11 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -228,6 +234,9 @@ public class GameFrame extends JFrame {
         private ArrayList<Bullet> bulletArray;
         private ArrayList<Double> bulletAngleArray;
         private boolean fall;
+        private int roomNumber;
+        private boolean remainedRooms[];
+        private boolean hasKey;
         int counter = 0;
         int numberOfBoxes;
         Box[] box;
@@ -254,7 +263,11 @@ public class GameFrame extends JFrame {
             }
             bufferedScene = new BufferedImage(1000, 700, BufferedImage.TYPE_INT_RGB);
             bufferedGraphics = (Graphics2D) bufferedScene.createGraphics();
-
+            remainedRooms = new boolean[12];
+            roomNumber = 0;
+            for (int i = 0; i < 12; i++) {
+                remainedRooms[i] = true;
+            }
             myRobot = new Robot();
             myRobot.setX(515);
             myRobot.setY(565);
@@ -283,7 +296,7 @@ public class GameFrame extends JFrame {
 
             this.addMouseMotionListener(this);
             this.addMouseListener(this);
-            loadMap();
+            loadMap(1);
             createBox();
         }
 
@@ -304,6 +317,9 @@ public class GameFrame extends JFrame {
 
         private void render(Graphics2D g2) throws URISyntaxException, IOException {
             g2.drawImage(backGround, 0, 0, null);
+            if (hasKey) {
+                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\key.png")).getImage(), 870, 20, null);
+            }
             for (int i = 0; i < 13; i++) {
                 for (int j = 0; j < 19; j++) {
                     if (mapMatrix[i][j] != 0) {
@@ -316,10 +332,32 @@ public class GameFrame extends JFrame {
                         } else if (mapMatrix[i][j] < 15) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
                             g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\item0" + (mapMatrix[i][j] - 10) + ".png")).getImage(), j * 52, i * 52, null);
-                        } else {
+                        } else if (mapMatrix[i][j] == 20) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
                             g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\wall0" + (mapMatrix[i][j] - 19) + ".png")).getImage(), j * 52, i * 52, null);
+                        } else if (mapMatrix[i][j] == 30) {
+                            g2.fillRect(j * 52, i * 52, 52, 52);
+                            if (!remainedRooms[roomNumber]) {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\openu.png")).getImage(), j * 52, i * 52, null);
+                            } else {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedu.png")).getImage(), j * 52, i * 52, null);
+                            }
+                        } else if (mapMatrix[i][j] == 40) {
+                            g2.fillRect(j * 52, i * 52, 52, 52);
+                            if (!remainedRooms[roomNumber]) {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\opend.png")).getImage(), j * 52, i * 52, null);
+                            } else {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedd.png")).getImage(), j * 52, i * 52, null);
+                            }
+                        } else if (mapMatrix[i][j] == 31) {
+                            g2.fillRect(j * 52, i * 52, 52, 52);
+                            g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedu.png")).getImage(), j * 52, i * 52, null);
+                            g2.setColor(Color.CYAN);
+                            g2.setFont(new Font("Tahoma", Font.BOLD, 10));
+                            g2.drawString("LOCKED", j * 52 + 5, i * 52 + 22);
+                            g2.setColor(Color.WHITE);
                         }
+
                     }
                 }
             }
@@ -354,6 +392,18 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
@@ -361,6 +411,27 @@ public class GameFrame extends JFrame {
                         fall = true;
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() - 13);
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -375,6 +446,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
@@ -382,6 +466,27 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() - 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -396,6 +501,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
@@ -403,6 +521,27 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -416,6 +555,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
@@ -423,6 +575,27 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -434,6 +607,19 @@ public class GameFrame extends JFrame {
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setX(myRobot.getX() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
@@ -441,6 +627,27 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         fall = true;
 
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -452,12 +659,46 @@ public class GameFrame extends JFrame {
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setX(myRobot.getX() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
 //                        resetGame();
                         myRobot.setX(myRobot.getX() + 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -469,12 +710,45 @@ public class GameFrame extends JFrame {
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
 //                        resetGame();
                         myRobot.setY(myRobot.getY() - 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -486,12 +760,46 @@ public class GameFrame extends JFrame {
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
+                            if (mapMatrix[robotY][robotX] == 11) {
+                                myRobot.money += 50;
+                            }
+                            if (mapMatrix[robotY][robotX] == 12) {
+                                myRobot.energy += 20;
+                                if (myRobot.energy > 100) {
+                                    myRobot.energy = 100;
+                                }
+                            }
+                            if (mapMatrix[robotY][robotX] == 15) {
+                                hasKey = true;
+                                System.out.println("key");
+                            }
                             mapMatrix[robotY][robotX] = 10;
                         }
                     } else if (mapMatrix[robotY][robotX] == 0) {
 //                        resetGame();
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
+                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                        roomNumber++;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(550);
+                        myRobot.setY(500);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        roomNumber--;
+                        loadMap(roomNumber);
+                        createEnemies();
+//                        creatingItems();
+                        createBox();
+                        myRobot.setX(350);
+                        myRobot.setY(30);
+                    } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
+                        hasKey = false;
+                        myRobot.setX(myRobot.getX() + 13);
+                        myRobot.setY(myRobot.getY() + 13);
+                        mapMatrix[robotX][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
@@ -617,10 +925,10 @@ public class GameFrame extends JFrame {
             }
         }
 
-        private void loadMap() {
+        private void loadMap(int k) {
             Scanner fromFileReader = null;
             try {
-                fromFileReader = new Scanner(new File("src/data/maps/map01.txt"));
+                fromFileReader = new Scanner(new File("src/data/maps/map0"+ k +".txt"));
             } catch (FileNotFoundException ex) {
                 System.out.println("Problems in reading the map file.");
             }
@@ -669,15 +977,15 @@ public class GameFrame extends JFrame {
             }
             box = new Box[numberOfBoxes];
             int boxNumber = 0;
-            for (int i = 0; i < 11; i++) {
-                for (int j = 0; j < 15; j++) {
+            for (int i = 0; i < 13; i++) {
+                for (int j = 0; j < 19; j++) {
                     if (((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) || (mapMatrix[i][j] == 20)) {
                         box[boxNumber] = new Box(i, j, (int) (Math.random() * 3));
                         box[boxNumber].boxType = 10 - mapMatrix[i][j];
+//                        box[0].insideObject = 5;
                         if (mapMatrix[i][j] == 20) {
                             box[boxNumber].isDamagable = false;
                         }
-                        System.out.println(i + " " + j);
                         boxNumber++;
                     }
                 }
@@ -688,6 +996,16 @@ public class GameFrame extends JFrame {
         public void run() {
             while (true) {
                 repaint();
+                if (shot ) {
+                try {
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(getClass().getClassLoader().getResource("\\data\\shot01.wav").toURI()));
+                    clip.open(inputStream);
+                    clip.start();
+                } catch (LineUnavailableException | URISyntaxException | UnsupportedAudioFileException | IOException e) {
+                }
+
+            }
                 getWindowFocusListeners();
                 try {
                     Thread.sleep(50);
@@ -696,8 +1014,17 @@ public class GameFrame extends JFrame {
                 }
             }
         }
-// mouse and key listener
 
+        private void createEnemies() throws URISyntaxException, IOException {
+            if (remainedRooms[roomNumber]) {
+                enemy.add(new Enemy());
+                enemy.get(0).type = Enemy.NOFIRE;
+                enemy.get(0).setX(350);
+                enemy.get(0).setY(100 + 0.25);
+            }
+        }
+
+// mouse and key listener
         @Override
         public void mouseDragged(MouseEvent e) {
             mouseX = e.getX();
