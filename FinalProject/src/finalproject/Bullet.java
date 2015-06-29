@@ -70,16 +70,17 @@ public class Bullet {
 //            System.out.println("health =  "+box[0].x);
             
             if (box[i].health != 0) {
-                System.out.println("gooooooooooog bfroe ");
+//                System.out.println("gooooooooooog bfroe ");
                 if ((box[i].y == (int) x / 52) && (box[i].x == (int) y / 52)) {
                     if (box[i].isDamagable) {
                         box[i].health--;
                         boxNumber = i;
-                        System.out.println("gooooooooooog  " + boxNumber);
+//                        System.out.println("gooooooooooog  " + boxNumber);
                     }
                     isCrashed = true;
                     if (box[i].health == 0) {
                         box[i].damage(map);
+                        
                     }
                 }
             }
