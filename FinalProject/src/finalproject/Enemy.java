@@ -14,16 +14,12 @@ import java.net.URISyntaxException;
  */
 public class Enemy extends Robot {
 
-//    int type;
     double teta;
     boolean isCrashed;
-//    final static int NOFIRE = 1;
 
     public Enemy() throws URISyntaxException, IOException {
         isAlive = true;
         isCrashed = false;
-//        if (type == Enemy.NOFIRE) {
-            health = 50;
-//        }
+        health = 50;
     }
 }

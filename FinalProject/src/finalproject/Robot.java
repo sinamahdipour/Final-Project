@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -39,9 +37,9 @@ public class Robot {
         health = 100;
         roomPlace = 0;
         money = 0;
-        energy = 5;
-        xp = 90;
-        xpLevel = 0;
+//        energy = 5;
+//        xp = 90;
+//        xpLevel = 0;
         legMovingImages = new BufferedImage[18];
         fall = new BufferedImage[7];
         try {
@@ -77,7 +75,7 @@ public class Robot {
         this.y = y;
     }
 
-    public Bullet newBullet() throws IOException, URISyntaxException {
+    public Bullet makeNewBullet() throws IOException, URISyntaxException {
         bullet = new Bullet();
         return bullet;
     }

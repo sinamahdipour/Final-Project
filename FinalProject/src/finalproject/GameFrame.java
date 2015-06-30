@@ -35,17 +35,23 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.event.MouseInputListener;
 
 /**
  *
  * @author Sina Mp
+ */
+/**
+ * defining the frame of the game, to which all the panels will be added
  */
 public class GameFrame extends JFrame {
 
@@ -57,9 +63,14 @@ public class GameFrame extends JFrame {
     ActionListener al;
     StartMenu sm;
     private Thread player;
+    public static int c;
 
+    /**
+     * here is the constructor of frame
+     */
     public GameFrame() {
         super("ROBO KILL");
+        c = 1;
         screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1000, 700);
         setLocation((screenDimention.width - 1000) / 2, (screenDimention.height - 700) / 2 - 15);
@@ -73,14 +84,125 @@ public class GameFrame extends JFrame {
 //        setResizable(false);
     }
 
-    /*   private class SettingsMenu extends JPanel {
-
-     @Override
-     public void paint(Graphics g) {
-
-     }
-     }
+    /**
+     * defining the settings menu in order to customize program
      */
+    private class SettingsMenu extends JPanel {
+
+//        public int c;
+        JRadioButton on;
+        JRadioButton off;
+        JLabel sound;
+        JButton s;
+        JButton st;
+
+        /**
+         * here is the constructor of settings panel
+         */
+        public SettingsMenu() {
+            setLayout(null);
+            setOpaque(false);
+            setSize(1000, 700);
+//            c = 1;
+            try {
+                backGround = ImageIO.read(new File(getClass().getClassLoader().getResource("\\data\\i.jpg").toURI()));
+            } catch (IOException ex) {
+                Logger.getLogger(SettingsMenu.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(GameFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            s = new JButton("Sounds On/Off");
+            st = new JButton("Start Game");
+            s.setSize(200,40);
+            st.setSize(100,40);
+            s.setLocation(1000 * 1 / 15, 700 * 26 / 50);
+            st.setLocation(1000 * 1 / 15, 700 * 26 / 50 + 45);
+            add(s);
+            add(st);
+            /**
+             * defining the action listener for radio buttons
+             */
+            al = new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (e.getSource() == s) {
+                        if(c == 1){
+                            c = 0;
+                        }else {
+                            c = 1;
+                        }
+                        System.out.println(c);
+                    }
+                    if(e.getSource() == st){
+                        Game g = new Game();
+                        player = new Thread(g);
+                        player.start();
+                        getContentPane().removeAll();
+                        getContentPane().add(g);
+                        getContentPane().repaint();
+                        g.requestFocus();
+                    }
+                    
+                   }
+
+            };
+            s.addActionListener(al);
+            st.addActionListener(al);
+            
+//            on.addActionListener(al);
+//            off.addActionListener(al);
+
+//            on = new JRadioButton("On",false);
+//            off = new JRadioButton("Off",false);
+//            on.setSize(100, 50);
+//            on.setLocation(600, 300);
+//            off.setSize(100, 50);
+//            off.setLocation(100, 600);
+//            sound = new JLabel();
+//            sound.setSize(100, 50);
+//            sound.setLocation(0, 0);
+
+//            ButtonGroup group = new ButtonGroup();
+//            group.add(on);
+//            group.add(off);
+
+//            on.addActionListener(al);
+//            off.addActionListener(al);
+//            group.setSize(200,100);
+//            group.setLocation(500,500);
+//            sound.setLocation(1000 * 1 / 15 - 20, 700 * 26 / 50);
+//            add(sound);
+//
+//            on.setLocation(1000 * 1 / 15, 700 * 26 / 50);
+//
+//            add(on);
+//
+//            off.setLocation(1000 * 1 / 15 + 20, 700 * 26 / 50);
+//
+//            add(off);
+
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            g.drawImage(backGround, 0, 0, null);
+            repaintComponents();
+        }
+
+        private void repaintComponents() {
+            s.repaint();
+            st.repaint();
+            
+        }
+
+//        public int returnSoundStatus() {
+//            return c;
+//        }
+    }
+
     private class StartMenu extends JPanel {
 
         public StartMenu() {
@@ -98,6 +220,7 @@ public class GameFrame extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (e.getSource() == startBtn) {
+
                         Menu2 m2 = new Menu2();
                         getContentPane().remove(sm);
                         getContentPane().add(m2);
@@ -105,6 +228,8 @@ public class GameFrame extends JFrame {
                     }
                     if (e.getSource() == settingsBtn) {
                         getContentPane().remove(sm);
+                        SettingsMenu s = new SettingsMenu();
+                        getContentPane().add(s);
                         getContentPane().repaint();
 
                     }
@@ -149,6 +274,9 @@ public class GameFrame extends JFrame {
 
     }
 
+    /**
+     * defining the second menu for selecting single or multi player
+     */
     private class Menu2 extends JPanel {
 
         Dimension screenDimention;
@@ -157,6 +285,9 @@ public class GameFrame extends JFrame {
         JButton multiplayerBtn;
         ActionListener al2;
 
+        /**
+         * here is the constructor of second menu
+         */
         public Menu2() {
             setLayout(null);
             screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
@@ -166,7 +297,9 @@ public class GameFrame extends JFrame {
             } catch (URISyntaxException | IOException ex) {
                 Logger.getLogger(GameFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            /**
+             * defining the action listener for buttons
+             */
             al2 = new ActionListener() {
 
                 @Override
@@ -185,7 +318,9 @@ public class GameFrame extends JFrame {
                     }
                 }
             };
-
+            /**
+             * defining buttons and setting their size and feature
+             */
             singleplayerBtn = new JButton("Single Player");
             multiplayerBtn = new JButton("Multi Player");
 
@@ -213,6 +348,9 @@ public class GameFrame extends JFrame {
         }
     }
 
+    /**
+     * the panel in which the game is played
+     */
     private class Game extends JPanel implements ActionListener, Runnable, MouseInputListener, MouseMotionListener {
 
         BufferedImage backGround;
@@ -226,8 +364,8 @@ public class GameFrame extends JFrame {
         private boolean right;
         private boolean down;
         private boolean up;
-        private AffineTransform identityL;
-        private AffineTransform identityB;
+        private AffineTransform legRotater;
+        private AffineTransform bulletRotater;
         private int time;
         private boolean shot;
         private Thread player;
@@ -235,20 +373,22 @@ public class GameFrame extends JFrame {
         private ArrayList<Double> bulletAngleArray;
         private boolean fall;
         private int roomNumber;
-        private boolean remainedRooms[];
+        private boolean[] arrayOfRooms;
         private boolean hasKey;
         int counter = 0;
         int numberOfBoxes;
         Box[] box;
-        AffineTransform identity;
-        AffineTransform enemyIdentity;
-        private ArrayList<Enemy> enemy;
+        AffineTransform robotRotater;
+        AffineTransform enemyRotater;
+        private ArrayList<Enemy> enemyArrayList;
         double enemyX;
         double enemyY;
         double mouseX;
         double mouseY;
+        private String ramz;
 
         public Game() {
+            ramz = " ";
             setFocusable(true);
             setLayout(null);
 
@@ -263,26 +403,25 @@ public class GameFrame extends JFrame {
             }
             bufferedScene = new BufferedImage(1000, 700, BufferedImage.TYPE_INT_RGB);
             bufferedGraphics = (Graphics2D) bufferedScene.createGraphics();
-            remainedRooms = new boolean[12];
+            arrayOfRooms = new boolean[12];
             roomNumber = 1;
             for (int i = 0; i < 12; i++) {
-                remainedRooms[i] = true;
+                arrayOfRooms[i] = true;
             }
             myRobot = new Robot();
             myRobot.setX(515);
             myRobot.setY(565);
 
-            enemy = new ArrayList<>();
+            enemyArrayList = new ArrayList<>();
             try {
-                enemy.add(new Enemy());
+                enemyArrayList.add(new Enemy());
             } catch (URISyntaxException ex) {
                 Logger.getLogger(GameFrame.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(GameFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
-//            enemy.get(0).type = Enemy.NOFIRE;
-            enemy.get(0).setX(350);
-            enemy.get(0).setY(100 + 0.25);
+            enemyArrayList.get(0).setX(350);
+            enemyArrayList.get(0).setY(100 + 0.25);
 
             bulletArray = new ArrayList<>();
             bulletAngleArray = new ArrayList<>();
@@ -316,6 +455,7 @@ public class GameFrame extends JFrame {
         }
 
         private void render(Graphics2D g2) throws URISyntaxException, IOException {
+
             g2.drawImage(backGround, 0, 0, null);
             if (hasKey) {
                 g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\key.png")).getImage(), 870, 20, null);
@@ -337,21 +477,21 @@ public class GameFrame extends JFrame {
                             g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\wall0" + (mapMatrix[i][j] - 19) + ".png")).getImage(), j * 52, i * 52, null);
                         } else if (mapMatrix[i][j] == 30) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
-                            if (!remainedRooms[roomNumber]) {
-                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\openu.png")).getImage(), j * 52, i * 52, null);
+                            if (!arrayOfRooms[roomNumber]) {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\openUp.png")).getImage(), j * 52, i * 52, null);
                             } else {
-                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedu.png")).getImage(), j * 52, i * 52, null);
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedUp.png")).getImage(), j * 52, i * 52, null);
                             }
                         } else if (mapMatrix[i][j] == 40) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
-                            if (!remainedRooms[roomNumber]) {
-                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\opend.png")).getImage(), j * 52, i * 52, null);
+                            if (!arrayOfRooms[roomNumber]) {
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\openDown.png")).getImage(), j * 52, i * 52, null);
                             } else {
-                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedd.png")).getImage(), j * 52, i * 52, null);
+                                g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedDown.png")).getImage(), j * 52, i * 52, null);
                             }
                         } else if (mapMatrix[i][j] == 31) {
                             g2.fillRect(j * 52, i * 52, 52, 52);
-                            g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedu.png")).getImage(), j * 52, i * 52, null);
+                            g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\closedUp.png")).getImage(), j * 52, i * 52, null);
                             g2.setColor(Color.CYAN);
                             g2.setFont(new Font("Tahoma", Font.BOLD, 10));
                             g2.drawString("LOCKED", j * 52 + 5, i * 52 + 22);
@@ -363,24 +503,24 @@ public class GameFrame extends JFrame {
             }
             int robotX = (int) ((myRobot.getX() + 28) / 52);
             int robotY = (int) ((myRobot.getY() + 24) / 52);
-            identityL = new AffineTransform();
-            identityB = new AffineTransform();
+            legRotater = new AffineTransform();
+            bulletRotater = new AffineTransform();
 
             if ((myRobot.getX() > -20) && (myRobot.getY() > 0) && (myRobot.getX() < 1000) && (myRobot.getY() < 700) && (!fall)) {
-                for (int i = 0; i < enemy.size(); i++) {
-                    enemyX = enemy.get(i).getX();
-                    enemyY = enemy.get(i).getY();
-                    enemy.get(i).teta = Math.atan((myRobot.getX() - enemyX) / (enemyY - myRobot.getY()));
-                    if (enemy.get(i).getX() > myRobot.getX()) {
-                        enemy.get(i).setX(enemy.get(i).getX() - 3.25);
-                    } else if (enemy.get(i).getX() < myRobot.getX()) {
-                        enemy.get(i).setX(enemy.get(i).getX() + 3.25);
+                for (int i = 0; i < enemyArrayList.size(); i++) {
+                    enemyX = enemyArrayList.get(i).getX();
+                    enemyY = enemyArrayList.get(i).getY();
+                    enemyArrayList.get(i).teta = Math.atan((myRobot.getX() - enemyX) / (enemyY - myRobot.getY()));
+                    if (enemyArrayList.get(i).getX() > myRobot.getX()) {
+                        enemyArrayList.get(i).setX(enemyArrayList.get(i).getX() - 3.25);
+                    } else if (enemyArrayList.get(i).getX() < myRobot.getX()) {
+                        enemyArrayList.get(i).setX(enemyArrayList.get(i).getX() + 3.25);
                     }
 
-                    if (enemy.get(i).getY() > myRobot.getY()) {
-                        enemy.get(i).setY(enemy.get(i).getY() - 3.25);
-                    } else if (enemy.get(i).getY() < myRobot.getY()) {
-                        enemy.get(i).setY(enemy.get(i).getY() + 3.25);
+                    if (enemyArrayList.get(i).getY() > myRobot.getY()) {
+                        enemyArrayList.get(i).setY(enemyArrayList.get(i).getY() - 3.25);
+                    } else if (enemyArrayList.get(i).getY() < myRobot.getY()) {
+                        enemyArrayList.get(i).setY(enemyArrayList.get(i).getY() + 3.25);
                     }
                 }
 
@@ -393,7 +533,7 @@ public class GameFrame extends JFrame {
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
                                 myRobot.energy += 20;
@@ -411,22 +551,20 @@ public class GameFrame extends JFrame {
                         fall = true;
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() - 13);
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(robotY*52);
-                        myRobot.setY(robotX*52);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(robotY*52);
-                        myRobot.setY(robotX*52);
+                        myRobot.setX(515);
+                        myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
                         myRobot.setX(myRobot.getX() + 13);
@@ -435,9 +573,9 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(-Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(-Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
 
                 } else if (right && up) {
                     robotX = (int) ((myRobot.getX() + 13 + 28) / 52);
@@ -447,7 +585,7 @@ public class GameFrame extends JFrame {
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
                                 myRobot.energy += 20;
@@ -466,22 +604,20 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() - 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(robotY*52);
-                        myRobot.setY(robotX*52);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(robotY*52);
-                        myRobot.setY(robotX*52);
+                        myRobot.setX(515);
+                        myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
                         myRobot.setX(myRobot.getX() + 13);
@@ -490,9 +626,9 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
 
                 } else if (right && down) {
                     robotX = (int) ((myRobot.getX() + 13 + 28) / 52);
@@ -502,7 +638,7 @@ public class GameFrame extends JFrame {
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
                                 myRobot.energy += 20;
@@ -521,21 +657,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(350);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
@@ -545,9 +679,9 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(3 * Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(3 * Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 } else if (left && down) {
                     robotX = (int) ((myRobot.getX() - 13 + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 13 + 24) / 52);
@@ -556,10 +690,10 @@ public class GameFrame extends JFrame {
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
-                                myRobot.energy += 20;
+                                myRobot.energy = myRobot.energy + 20;
                                 if (myRobot.energy > 100) {
                                     myRobot.energy = 100;
                                 }
@@ -575,21 +709,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(350);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
@@ -599,19 +731,19 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(-3 * Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(-3 * Math.PI / 4, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 } else if (left) {
                     robotX = (int) ((myRobot.getX() - 13 + 28) / 52);
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setX(myRobot.getX() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
-                                myRobot.energy += 20;
+                                myRobot.energy = myRobot.energy + 20;
                                 if (myRobot.energy > 100) {
                                     myRobot.energy = 100;
                                 }
@@ -627,21 +759,19 @@ public class GameFrame extends JFrame {
                         myRobot.setX(myRobot.getX() - 13);
                         fall = true;
 
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(350);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
@@ -651,26 +781,25 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(-Math.PI / 2, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(-Math.PI / 2, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 } else if (right) {
                     robotX = (int) ((myRobot.getX() + 13 + 28) / 52);
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setX(myRobot.getX() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
-                                myRobot.energy += 20;
+                                myRobot.energy = myRobot.energy + 20;
                                 if (myRobot.energy > 100) {
                                     myRobot.energy = 100;
                                 }
                             }
                             if (mapMatrix[robotY][robotX] == 13) {
                                 hasKey = true;
-                                System.out.println("key");
                             }
                             mapMatrix[robotY][robotX] = 10;
                         }
@@ -678,21 +807,19 @@ public class GameFrame extends JFrame {
 //                        resetGame();
                         myRobot.setX(myRobot.getX() + 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(350);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
@@ -702,19 +829,19 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(Math.PI / 2, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(Math.PI / 2, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 } else if (up) {
                     robotY = (int) ((myRobot.getY() - 13 + 24) / 52);
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setY(myRobot.getY() - 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
-                                myRobot.energy += 20;
+                                myRobot.energy = myRobot.energy + 20;
                                 if (myRobot.energy > 100) {
                                     myRobot.energy = 100;
                                 }
@@ -728,44 +855,41 @@ public class GameFrame extends JFrame {
 //                        resetGame();
                         myRobot.setY(myRobot.getY() - 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(350);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
-//                        mapMatrix[robotX][robotX] = 30;
                         myRobot.setX(myRobot.getX() + 13);
                         myRobot.setY(myRobot.getY() + 13);
                         mapMatrix[robotY][robotX] = 30;
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(0, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(0, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 } else if (down) {
                     robotY = (int) ((myRobot.getY() + 13 + 24) / 52);
                     if (mapMatrix[robotY][robotX] != 0 && (mapMatrix[robotY][robotX] < 20) && ((mapMatrix[robotY][robotX] < 6) || (mapMatrix[robotY][robotX] > 9))) {
                         myRobot.setY(myRobot.getY() + 13);
                         if ((mapMatrix[robotY][robotX] > 10) && (mapMatrix[robotY][robotX] < 20)) {
                             if (mapMatrix[robotY][robotX] == 11) {
-                                myRobot.money += 50;
+                                myRobot.money = myRobot.money + 50;
                             }
                             if (mapMatrix[robotY][robotX] == 12) {
-                                myRobot.energy += 20;
+                                myRobot.energy = myRobot.energy + 20;
                                 if (myRobot.energy > 100) {
                                     myRobot.energy = 100;
                                 }
@@ -779,21 +903,19 @@ public class GameFrame extends JFrame {
 //                        resetGame();
                         myRobot.setY(myRobot.getY() + 13);
                         fall = true;
-                    } else if (mapMatrix[robotY][robotX] == 30 && !remainedRooms[roomNumber]) {
+                    } else if (mapMatrix[robotY][robotX] == 30 && !arrayOfRooms[roomNumber]) {
                         roomNumber++;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
-                        myRobot.setY(500);
-                    } else if (mapMatrix[robotY][robotX] == 40 && !remainedRooms[roomNumber]) {
+                        myRobot.setX(505);
+                        myRobot.setY(565);
+                    } else if (mapMatrix[robotY][robotX] == 40 && !arrayOfRooms[roomNumber]) {
                         roomNumber--;
                         loadMap(roomNumber);
                         createEnemies();
-//                        creatingItems();
                         createBox();
-                        myRobot.setX(550);
+                        myRobot.setX(515);
                         myRobot.setY(30);
                     } else if (mapMatrix[robotY][robotX] == 31 && hasKey) {
                         hasKey = false;
@@ -804,48 +926,43 @@ public class GameFrame extends JFrame {
                     }
                     robotX = (int) ((myRobot.getX() + 28) / 52);
                     robotY = (int) ((myRobot.getY() + 24) / 52);
-                    identityL.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-                    identityL.rotate(Math.PI, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
-                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], identityL, null);
+                    legRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+                    legRotater.rotate(Math.PI, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+                    g2.drawImage(myRobot.legMovingImages[Math.abs(time % 18)], legRotater, null);
                 }
 
                 counter = 0;
             }
             int xFire = 0, yFire = 0;
-            double tg;
+            double tang;
 
-            /*for (int i = 0; i < bulletArray.size(); i++) {
-             for (int j = 0; j < enemy.size(); j++) {
-             if (!enemy.get(j).isAlive) {
-             enemy.remove(j);
-             }
-             }*/
             for (int i = 0; i < bulletArray.size(); i++) {
-                for (int j = 0; j < enemy.size(); j++) {
-                    if (!enemy.get(j).isAlive) {
-                        enemy.remove(j);
+                for (int j = 0; j < enemyArrayList.size(); j++) {
+                    if (!enemyArrayList.get(j).isAlive) {
+                        enemyArrayList.remove(j);
                     }
-                    if (enemy.size() == 0) {
-                        remainedRooms[roomNumber] = false;
+                    if (enemyArrayList.size() == 0) {
+                        arrayOfRooms[roomNumber] = false;
                     }
                 }
 
 //            System.out.println("22222222222222222");
                 System.out.println("h   " + numberOfBoxes);
-                boolean f = bulletArray.get(i).isCrashed(box, mapMatrix, numberOfBoxes, enemy);
+                boolean f = bulletArray.get(i).isCrashed(box, mapMatrix, numberOfBoxes, enemyArrayList);
 //                repaint();
                 if (f) {
 //                    System.out.println("siiiiiiiiiiiiiiiinaaaaaaaaaaaaaaaaaa");
                     if ((bulletArray.get(i).boxCrashedNumber() >= 0) && (box[bulletArray.get(i).boxCrashedNumber()].boxType > 0)) {
+                        System.out.println("zzzzzzzzzzzzzzzz   " + box[bulletArray.get(i).boxCrashedNumber()].boxType);
                         g2.drawImage(new ImageIcon(getClass().getClassLoader().getResource("\\data\\box0" + box[bulletArray.get(i).boxCrashedNumber()].boxType + "hitted.png")).getImage(), box[bulletArray.get(i).boxCrashedNumber()].y * 52, box[bulletArray.get(i).boxCrashedNumber()].x * 52, this);
                         System.out.println("faaaaaaaaaaaaaaaaaaaaaaaaar");
                     }
                     if (bulletArray.get(i).enemyCrashedNumber() >= 0) {
-                        enemyIdentity.setToTranslation(enemy.get(bulletArray.get(i).enemyCrashedNumber()).getX() + 9, enemy.get(bulletArray.get(i).enemyCrashedNumber()).getY());
-                        enemyIdentity.rotate(enemy.get(bulletArray.get(i).enemyCrashedNumber()).teta, enemy.get(bulletArray.get(i).enemyCrashedNumber()).bodyImage.getWidth() / 2, enemy.get(bulletArray.get(i).enemyCrashedNumber()).bodyImage.getHeight() / 2);
-                        g2.drawImage(enemy.get(bulletArray.get(i).enemyCrashedNumber()).bodyHitted, (int) enemy.get(bulletArray.get(i).enemyCrashedNumber()).getX() + 9, (int) enemy.get(bulletArray.get(i).enemyCrashedNumber()).getY(), this);
-                        g2.drawImage(enemy.get(bulletArray.get(i).enemyCrashedNumber()).bodyHitted, enemyIdentity, this);
-                        enemy.get(bulletArray.get(i).enemyCrashedNumber()).isCrashed = true;
+                        enemyRotater.setToTranslation(enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).getX() + 9, enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).getY());
+                        enemyRotater.rotate(enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).teta, enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).bodyImage.getWidth() / 2, enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).bodyImage.getHeight() / 2);
+                        g2.drawImage(enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).bodyHitted, (int) enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).getX() + 9, (int) enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).getY(), this);
+                        g2.drawImage(enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).bodyHitted, enemyRotater, this);
+                        enemyArrayList.get(bulletArray.get(i).enemyCrashedNumber()).isCrashed = true;
                     }
                     g2.drawImage(crash, (int) bulletArray.get(i).getX() - 8, (int) bulletArray.get(i).getY() - 8, this);
                     bulletArray.remove(i);
@@ -855,73 +972,69 @@ public class GameFrame extends JFrame {
 //                bulletArray.get(i).setY(bulletArray.get(i).getY() - 20);
 
 //                System.out.println(Math.tan(-(teta - (Math.PI / 2))));
-                    tg = Math.tan(-(bulletAngleArray.get(i) - (Math.PI / 2)));
+                    tang = Math.tan(-(bulletAngleArray.get(i) - (Math.PI / 2)));
 
-                    if ((0 <= tg) && (tg <= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
+                    if ((0 <= tang) && (tang <= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
                         xFire = 20;
-                        yFire = (int) (20 * tg);
-                    } else if ((0 <= tg) && (tg >= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
+                        yFire = (int) (20 * tang);
+                    } else if ((0 <= tang) && (tang >= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
                         yFire = 20;
-                        xFire = (int) (20 / tg);
-                    } else if ((0 >= tg) && (tg >= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
+                        xFire = (int) (20 / tang);
+                    } else if ((0 >= tang) && (tang >= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
                         xFire = -20;
-                        yFire = -(int) (20 * tg);
-                    } else if ((-1 >= tg) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
+                        yFire = -(int) (20 * tang);
+                    } else if ((-1 >= tang) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) >= 0)) {
                         yFire = 20;
-                        xFire = (int) (20 / tg);
-                    } else if ((0 >= tg) && (tg >= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
+                        xFire = (int) (20 / tang);
+                    } else if ((0 >= tang) && (tang >= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
                         xFire = 20;
-                        yFire = (int) (20 * tg);
-                    } else if ((tg <= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
+                        yFire = (int) (20 * tang);
+                    } else if ((tang <= -1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
                         yFire = -20;
-                        xFire = -(int) (20 / tg);
-                    } else if ((0 <= tg) && (tg <= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
+                        xFire = -(int) (20 / tang);
+                    } else if ((0 <= tang) && (tang <= 1) && (-(bulletAngleArray.get(i) - (Math.PI / 2)) <= 0)) {
                         xFire = -20;
-                        yFire = -(int) (20 * tg);
+                        yFire = -(int) (20 * tang);
                     } else {
                         yFire = -20;
-                        xFire = -(int) (20 / tg);
+                        xFire = -(int) (20 / tang);
                     }
 
                     bulletArray.get(i).setX(bulletArray.get(i).getX() + xFire);
                     bulletArray.get(i).setY(bulletArray.get(i).getY() - yFire);
-                    identityB.setToTranslation(bulletArray.get(i).getX(), bulletArray.get(i).getY());
-                    identityB.rotate(bulletAngleArray.get(i), bulletArray.get(i).bullets[0].getWidth() / 2, bulletArray.get(i).bullets[0].getHeight() / 2);
-                    g2.drawImage(bulletArray.get(i).bullets[0], identityB, null);
+                    bulletRotater.setToTranslation(bulletArray.get(i).getX(), bulletArray.get(i).getY());
+                    bulletRotater.rotate(bulletAngleArray.get(i), bulletArray.get(i).bullets[0].getWidth() / 2, bulletArray.get(i).bullets[0].getHeight() / 2);
+                    g2.drawImage(bulletArray.get(i).bullets[0], bulletRotater, null);
                 }
             }
 
             if (shot) {
-                bulletArray.add(myRobot.newBullet());
+                bulletArray.add(myRobot.makeNewBullet());
                 bulletAngleArray.add(alfa);
-                //**************************
                 bulletArray.get(bulletArray.size() - 1).setX(myRobot.getX() + 15);
                 bulletArray.get(bulletArray.size() - 1).setY(myRobot.getY() + 18);
             }
 
-            identity = new AffineTransform();
-            identity.setToTranslation(myRobot.getX() + 9, myRobot.getY());
-            identity.rotate(alfa, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
+            robotRotater = new AffineTransform();
+            robotRotater.setToTranslation(myRobot.getX() + 9, myRobot.getY());
+            robotRotater.rotate(alfa, myRobot.bodyImage.getWidth() / 2, myRobot.bodyImage.getHeight() / 2);
 
-            enemyIdentity = new AffineTransform();
+            enemyRotater = new AffineTransform();
 
-            // for drawing enemies
-            for (int i = 0; i < enemy.size(); i++) {
-                enemyIdentity.setToTranslation(enemy.get(i).getX() + 9, enemy.get(i).getY());
-                enemyIdentity.rotate(enemy.get(i).teta, enemy.get(i).bodyImage.getWidth() / 2, enemy.get(i).bodyImage.getHeight() / 2);
-//                if (enemy.get(i).type == Enemy.NOFIRE) {
-                if (!enemy.get(i).isCrashed) {
-                    g2.drawImage(enemy.get(i).bodyImage, enemyIdentity, this);
+            // drawing enemies
+            for (int i = 0; i < enemyArrayList.size(); i++) {
+                enemyRotater.setToTranslation(enemyArrayList.get(i).getX() + 9, enemyArrayList.get(i).getY());
+                enemyRotater.rotate(enemyArrayList.get(i).teta, enemyArrayList.get(i).bodyImage.getWidth() / 2, enemyArrayList.get(i).bodyImage.getHeight() / 2);
+                if (!enemyArrayList.get(i).isCrashed) {
+                    g2.drawImage(enemyArrayList.get(i).bodyImage, enemyRotater, this);
                 } else {
-                    enemy.get(i).isCrashed = false;
+                    enemyArrayList.get(i).isCrashed = false;
                 }
-//                }
             }
-            //
             if (!fall) {
-                g2.drawImage(myRobot.bodyImage, identity, null);
+                g2.drawImage(myRobot.bodyImage, robotRotater, null);
             } else {
-                g2.drawImage(myRobot.fall[counter], identity, null);
+                g2.drawImage(myRobot.fall[counter], robotRotater, null);
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
@@ -930,8 +1043,8 @@ public class GameFrame extends JFrame {
                 counter++;
                 if (counter == 7) {
                     fall = false;
-                    myRobot.setX(550);
-                    myRobot.setY(500);
+                    myRobot.setX(515);
+                    myRobot.setY(565);
                 }
             }
         }
@@ -993,8 +1106,9 @@ public class GameFrame extends JFrame {
                     if (((mapMatrix[i][j] > 5) && (mapMatrix[i][j] < 10)) || (mapMatrix[i][j] == 20)) {
                         System.out.println("check point");
                         box[boxNumber] = new Box(i, j, (int) (Math.random() * 3));
-                        
+
                         box[boxNumber].boxType = 10 - mapMatrix[i][j];
+                        System.out.println("zzzzzzzzzzzzzzzz   " + box[boxNumber].boxType);
                         box[0].insideObject = 3;
                         if (mapMatrix[i][j] == 20) {
                             box[boxNumber].isDamagable = false;
@@ -1011,10 +1125,12 @@ public class GameFrame extends JFrame {
                 repaint();
                 if (shot) {
                     try {
-                        Clip clip = AudioSystem.getClip();
-                        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(getClass().getClassLoader().getResource("\\data\\shot01.wav").toURI()));
-                        clip.open(inputStream);
-                        clip.start();
+                        if (c == 1) {
+                            Clip clip = AudioSystem.getClip();
+                            AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(getClass().getClassLoader().getResource("\\data\\shot01.wav").toURI()));
+                            clip.open(inputStream);
+                            clip.start();
+                        }
                     } catch (LineUnavailableException | URISyntaxException | UnsupportedAudioFileException | IOException e) {
                     }
 
@@ -1029,10 +1145,10 @@ public class GameFrame extends JFrame {
         }
 
         private void createEnemies() throws URISyntaxException, IOException {
-            if (remainedRooms[roomNumber]) {
-                enemy.add(new Enemy());
-                enemy.get(0).setX(350);
-                enemy.get(0).setY(100 + 0.25);
+            if (arrayOfRooms[roomNumber]) {
+                enemyArrayList.add(new Enemy());
+                enemyArrayList.get(0).setX(350);
+                enemyArrayList.get(0).setY(100 + 0.25);
             }
         }
 
@@ -1092,12 +1208,20 @@ public class GameFrame extends JFrame {
 
         @Override
         protected void processKeyEvent(KeyEvent e) {
+
             alfa = Math.atan((mouseX - myRobot.getX()) / (myRobot.getY() - mouseY));
             if (myRobot.getY() < mouseY) {
                 alfa = Math.PI + alfa;
             }
 
             if (e.getID() == KeyEvent.KEY_PRESSED) {
+                
+
+                ramz = ramz + e.getKeyChar();
+                if (ramz.contains("givemekey")) {
+                    hasKey = true;
+                }
+
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                     left = true;
                     time--;

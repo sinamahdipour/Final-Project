@@ -19,10 +19,6 @@ public class Box {
     int mapMatrix[][];
     int health;
     int boxType;
-//    static int NOTHING = 0;
-//    static int MONEY = 1;
-//    static int ENERGY = 2;
-//    static int KEY = 3;
 
     public Box(int x, int y, int inObject) {
         isDamaged = false;
@@ -37,7 +33,7 @@ public class Box {
     public int[][] damage(int mapMx[][]) {
         this.mapMatrix = mapMx;
         isDamaged = true;
-        mapMatrix[x][y] = 10 + insideObject;
+        mapMatrix[x][y] = insideObject + 10;
         System.out.println("wwwwwwwwwwwwwwwwww  " + mapMatrix[x][y]);
         return mapMatrix;
     }
